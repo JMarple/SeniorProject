@@ -10,6 +10,14 @@ typedef struct
 	float radius;
 }Obstacle;
 
+//Work around for robotC glitch for passing arrays
+typedef struct
+{
+	//Array of obstacles
+	Obstacle point[OBSTACLE_COUNT];
+
+}Obstacles;
+
 
 typedef struct
 {
@@ -19,10 +27,12 @@ typedef struct
 
 }Target;
 
-typedef struct
+//Generate a new point
+void newTarget(Target tar, int x, int y)
 {
-	float data;
-}Data;
+	tar.x = x;
+	tar.y = y;
+}
 
 /* Structures */
 typedef struct{
@@ -51,6 +61,9 @@ typedef enum
 
 	//Drive Straight, check for when one wheel goes faster then the other and correct
 	StraightEncoderCorrect = 1,
+
+	//Drive Straight, check to make sure we're going at the right heading using gyro info
+	StraightGyroCorrect = 4,
 
 	//Turn using encoders
 	TurnEncoder = 2,

@@ -20,82 +20,72 @@
 /************************************/
 /* Senior Project                   */
 /* V0.10 - Basic Setup              */
-/*                                  */
-/*                                  */
-/*                                  */
+/*        April 10th                */
+/* V0.11 - Demo                     */
+/*        April 11th                */
+/* V0.12 - Path Demos               */
+/*        April 23rd                */
+
 /************************************/
 
 /* Constants */
 const int 	OBSTACLE_COUNT = 10;
 const float	TURN_CONV = 1.0; //Conversion rate for Degrees to encoder value for turning
-const float	STAIGHT_CONV = 50.0; //Conversion rate for Inches to encoder values for regular driving
+const float	STAIGHT_CONV = 9.0; //Conversion rate for Inches to encoder values for regular driving
 
 /* Include Files */
 #include "Objects.c";
-#include "Control.c"
+#include "Control.c";
+#include "FieldGeneration.c";
+#include "DrivePath.c";
 
 //SetPoints
 Target startPoint;
 Target endPoint;
 
-//List of Undermined obstacles
-Obstacle obstacles[OBSTACLE_COUNT];
+//List of Undetermined obstacles
+Obstacles obstacles;
 
-
-//Front Sonar Values
-const int FrontSonarCheckAmount = 60;
-Data data[FrontSonarCheckAmount];
-int lowestID = 0;
-int totalID = 0;
-int sumID = 0;
 task main()
 {
-	while(true)
-	{
-		setDriveMotor(0, 0); motor[SonarServo] = 0;
+	//Display Status
+	displayStatus(0, "Calibrating Gyro");
+	displayStatus(1, "Senior Project");
 
-		WaitForButton();
-		for(int i = 0; i < FrontSonarCheckAmount; i++)
-		{
-			motor[SonarServo] = i * (256/FrontSonarCheckAmount) - 127;
-			data[i].data = SensorValue[ServoSonar];
-			wait1Msec(100);
-		}
+	//Allow the gyro to calibrate
+	calibrateGyro(2000);
 
-		lowestID = 0;
+	//Display Field Status
+	displayStatus(0, "Generating Field");
 
-		for(int i = 1; i < FrontSonarCheckAmount; i++)
-		{
-			if( data[i].data <= data[lowestID].data && data[i].data != 0 && data[i].data != -1)
-			{
-				totalID ++;
-				sumID += i;
+	//Assign a new field to the robot
+	generateObstacles(0, obstacles);
 
-				if(data[i].data < data[lowestID].data)
-				{
-					lowestID = i;
-					totalID = 0;
-					sumID = i;
-				}
+	//Assign new targets to startPoint and endPoint
+	//NOTE: Coordinantes start at bottom left
+	newTarget(startPoint, 0, 0);
+	newTarget(endPoint, 40, 30);
 
-			}
+	//Display Setup Status
+	displayStatus(0, "Setup Complete");
 
-		}
-		Drive(TurnEncoder, 45 - (( (float)sumID/(float)totalID ) /(float)FrontSonarCheckAmount) * 90 , 0, 127, 127, true);
-	}
-	/*while(true)
-	{
-		WaitForButton();
-		Drive(StraightEncoder, 10, 10, 127, 127, true);
-		Drive(TurnEncoder, 180, 0, 127, 127, true);
-		Drive(StraightEncoder, 10, 10, 127, 127, true);
-	}*/
+	//Wait for button push
+	WaitForButton();
 
-	/*while(true)
-	{
-		motor[LeftDrive1] = motor[LeftDrive2] = vexRT[Ch3];
-		motor[RightDrive1] = motor[RightDrive2] = vexRT[Ch2];
-		motor[SonarServo] = vexRT[Ch1];
-	}*/
+	//Drive to Point A
+	driveToPoint(startPoint, endPoint);
+
+	wait1Msec(500);
+	//Drive to Point B
+	newTarget(startPoint, 40, 30);
+	newTarget(endPoint, 40, 60);
+
+	driveToPoint(startPoint, endPoint);
+
+	wait1Msec(500);
+	newTarget(startPoint, 40, 60);
+	newTarget(endPoint, 40, 30);
+
+	driveToPoint(startPoint, endPoint);
 
 }

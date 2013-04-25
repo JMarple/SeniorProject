@@ -16,15 +16,19 @@ void Drive(ControlType controlType, int encoderLeft, int encoderRight, int speed
 	{
 		//Initial PID Values
 		PID kPID;
-		kPID.P = 2;
-		kPID.I = 0.03;
-		kPID.D = 3;
+		kPID.P = 0.5;
+		kPID.I = 0.0;
+		kPID.D = 0.5;
 		kPID.IntegralMax = 500;
 		kPID.Error = 10000;
 		kPID.maxTime = 10000;
 
+		//Try to reduce slop from motors
+		setDriveMotor(10, 10);
+		wait1Msec(100);
+
 		//Run through PID until robot has reached goal
-		while(canStillRunPID(kPID, 5, accuracyCheck))
+		while(canStillRunPID(kPID, 50, accuracyCheck))
 		{
 			//Calculate Speed of wheels
 			int speed = calculatePID(kPID,
@@ -38,6 +42,52 @@ void Drive(ControlType controlType, int encoderLeft, int encoderRight, int speed
 			wait1Msec(5);
 		}
 
+	}
+	/* Drive Straight with gyro heading correction*/
+	else if(controlType == StraightGyroCorrect)
+	{
+		//Initial PID Values
+		PID kPID;
+		kPID.P = 0.5;
+		kPID.I = 0.0;
+		kPID.D = 0.5;
+		kPID.IntegralMax = 500;
+		kPID.Error = 10000;
+		kPID.maxTime = 10000;
+
+		//Values for correct left/right steering
+		PID kGyro;
+		kGyro.P = 0.25;
+		kGyro.I = 0.0;
+		kGyro.D = 0.0;
+		kGyro.IntegralMax = 500;
+		kGyro.Error = 10000;
+		kGyro.maxTime = 10000;
+
+		//Try to reduce slop from motors
+		setDriveMotor(10, 10);
+		wait1Msec(100);
+
+		//Run through PID until robot has reached goal
+		while(canStillRunPID(kPID, 10, accuracyCheck))
+		{
+			//Calculate Speed of wheels
+			int speed = calculatePID(kPID,
+				(SensorValue[LeftEncoder] - SensorValue[RightEncoder])/2 - (encoderLeft*STAIGHT_CONV));
+
+			//Calculate Offset
+			int offset = calculatePID(kGyro,
+				encoderRight*10 - SensorValue[in5] );
+
+			//Limit offset
+			offset = clipNum(offset, -speed/2, speed/2);
+
+			//Update Motors
+			setDriveMotor(clipNum(speed + offset, -speedLeft, speedLeft), clipNum(speed - offset, -speedRight, speedRight));
+
+			//Prevent CPU Hog
+			wait1Msec(5);
+		}
 	}
 	/* Turn using encoders */
 	else if(controlType == TurnEncoder)
@@ -60,6 +110,41 @@ void Drive(ControlType controlType, int encoderLeft, int encoderRight, int speed
 
 			//Update Motors
 			setDriveMotor(speed, -speed);
+
+			//Prevent CPU Hog
+			wait1Msec(5);
+		}
+	}
+	/* Turn using Gyro */
+	else if(controlType == TurnGyro)
+	{
+
+		//Initial PID Values
+		PID kPID;
+		kPID.P = 0.25;
+		kPID.I = 0.02;
+		kPID.D = 0.2;
+		kPID.IntegralMax = 1000;
+		kPID.Error = 10000;
+		kPID.maxTime = 10000;
+
+		//Try to reduce slop from motors
+		setDriveMotor(10, 10);
+		wait1Msec(100);
+
+		//Run through PID until robot has reached goal
+		while(canStillRunPID(kPID, 20, accuracyCheck))
+		{
+			//Calculate Speed of wheels using errors
+			int speed = calculatePID(kPID,
+				encoderLeft*10 - SensorValue[in5]);
+
+			//Update Motors
+			setDriveMotor(-speed, speed);
+
+			//Reset Integral if too far away
+			if(!(kPID.Error < 35))
+				kPID.Integral = 0;
 
 			//Prevent CPU Hog
 			wait1Msec(5);
@@ -109,7 +194,7 @@ bool canStillRunPID(PID pid, int error, bool accuracyCheck)
 	if(abs(pid.Error) <= error)
 	{
 		pid.counter ++;
-		if(pid.counter >= 50 || accuracyCheck == FALSE)
+		if(pid.counter >= 50 || accuracyCheck == false)
 		{
 			return false;
 		}
@@ -142,4 +227,24 @@ int calculatePID(PID pid, int error)
 
 	//Return result
 	return (pid.Error*pid.P) + (pid.Integral*pid.I) + (pid.Derivative*pid.D);
+}
+
+/* Function that resets gyro for x amount of seconds */
+void calibrateGyro(int millisec)
+{
+	//Erase Sensor Type
+	SensorType[in5] = sensorNone;
+ 	wait1Msec(100);
+
+ 	//Redo sensor type to gyro
+ 	SensorType[in5] = sensorGyro;
+ 	//Wait some time for gyro
+ 	wait1Msec(millisec);
+}
+
+/* Function that displays a status on the lcd screen */
+void displayStatus(int line, const string str)
+{
+	clearLCDLine(line);
+	displayLCDCenteredString(line, str);
 }
