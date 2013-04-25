@@ -38,6 +38,7 @@ const float	STAIGHT_CONV = 9.0; //Conversion rate for Inches to encoder values f
 #include "Control.c";
 #include "FieldGeneration.c";
 #include "DrivePath.c";
+#include "Path.c";
 
 //SetPoints
 Target startPoint;
@@ -69,23 +70,10 @@ task main()
 	//Display Setup Status
 	displayStatus(0, "Setup Complete");
 
-	//Wait for button push
-	WaitForButton();
+	//Tests if line intersects a region around an obstacle
+	doesPathIntersectObstacle(10, 20, 50, 55, 30, 25, 5);
 
-	//Drive to Point A
-	driveToPoint(startPoint, endPoint);
 
-	wait1Msec(500);
-	//Drive to Point B
-	newTarget(startPoint, 40, 30);
-	newTarget(endPoint, 40, 60);
 
-	driveToPoint(startPoint, endPoint);
-
-	wait1Msec(500);
-	newTarget(startPoint, 40, 60);
-	newTarget(endPoint, 40, 30);
-
-	driveToPoint(startPoint, endPoint);
 
 }
