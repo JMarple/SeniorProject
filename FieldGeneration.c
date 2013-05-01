@@ -25,15 +25,12 @@ void generateObstacles(int preset, Obstacles obst)
 
 		/* Preset Field 0 */
 		case 0:
-			float globalradius = 2.0;
+			float globalradius = 5.0;
 
-			obst.point[0].x = 0; obst.point[0].y = 25; obst.point[0].radius = globalradius;
-			obst.point[1].x = 0; obst.point[1].y = 25; obst.point[1].radius = globalradius;
-			obst.point[2].x = 0; obst.point[2].y = 25; obst.point[2].radius = globalradius;
-			obst.point[3].x = 0; obst.point[3].y = 25; obst.point[3].radius = globalradius;
-			obst.point[4].x = 0; obst.point[4].y = 25; obst.point[4].radius = globalradius;
-			obst.point[5].x = 0; obst.point[5].y = 25; obst.point[5].radius = globalradius;
-
+			obst.point[0].x = 50; obst.point[0].y = 45; obst.point[0].radius = globalradius;
+			obst.point[1].x = 20; obst.point[1].y = 20; obst.point[1].radius = globalradius;
+			obst.point[2].x = 60; obst.point[2].y = 10; obst.point[2].radius = globalradius;
+			obst.point[3].x = 40; obst.point[3].y = 15; obst.point[3].radius = globalradius;
 			break;
 		default:
 			break;

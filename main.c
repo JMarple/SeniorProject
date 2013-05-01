@@ -29,9 +29,13 @@
 /************************************/
 
 /* Constants */
-const int 	OBSTACLE_COUNT = 10;
+const int 	OBSTACLE_COUNT = 4;
 const float	TURN_CONV = 1.0; //Conversion rate for Degrees to encoder value for turning
 const float	STAIGHT_CONV = 9.0; //Conversion rate for Inches to encoder values for regular driving
+const int 	MAX_PATH_SIZE = 10;//Maximum amount of points a path can be
+const int 	GENETIC_SIZE	= 10;
+const int		FIELD_WIDTH		= 75;//Width of the field
+const int 	FIELD_HEIGHT	= 75;//Height of the field
 
 /* Include Files */
 #include "Objects.c";
@@ -47,6 +51,12 @@ Target endPoint;
 //List of Undetermined obstacles
 Obstacles obstacles;
 
+//Array of Paths
+Path paths[GENETIC_SIZE];
+Path bestPaths[2];
+
+#include "Genetic.c";
+
 task main()
 {
 	//Display Status
@@ -54,7 +64,7 @@ task main()
 	displayStatus(1, "Senior Project");
 
 	//Allow the gyro to calibrate
-	calibrateGyro(2000);
+	//calibrateGyro(2000);
 
 	//Display Field Status
 	displayStatus(0, "Generating Field");
@@ -70,10 +80,11 @@ task main()
 	//Display Setup Status
 	displayStatus(0, "Setup Complete");
 
-	//Tests if line intersects a region around an obstacle
-	doesPathIntersectObstacle(10, 20, 50, 55, 30, 25, 5);
+	//Setup random paths for the robot
+	initializePaths(startPoint, endPoint, obstacles);
 
-
+	//Save the best paths and reset all the paths
+	saveBestPaths();
 
 
 }

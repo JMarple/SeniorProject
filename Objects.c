@@ -18,7 +18,6 @@ typedef struct
 
 }Obstacles;
 
-
 typedef struct
 {
 	//Position
@@ -26,6 +25,13 @@ typedef struct
 	float y;
 
 }Target;
+
+/* Structure that holds a set of Targets */
+typedef struct
+{
+	Target point[MAX_PATH_SIZE];
+	float cost;
+}Path;
 
 //Generate a new point
 void newTarget(Target tar, int x, int y)
