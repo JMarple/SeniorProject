@@ -29,7 +29,7 @@
 /************************************/
 
 /* Constants */
-const int 	OBSTACLE_COUNT = 4;
+const int 	OBSTACLE_COUNT = 7;
 const float	TURN_CONV = 1.0; //Conversion rate for Degrees to encoder value for turning
 const float	STAIGHT_CONV = 9.0; //Conversion rate for Inches to encoder values for regular driving
 const int 	MAX_PATH_SIZE = 10;//Maximum amount of points a path can be
@@ -83,8 +83,14 @@ task main()
 	//Setup random paths for the robot
 	initializePaths(startPoint, endPoint, obstacles);
 
-	//Save the best paths and reset all the paths
-	saveBestPaths();
+	for(int n = 0; n < 50; n++)
+	{
+		//Save the best paths and reset all the paths
+		saveBestPaths();
+
+		//Get New Paths
+		breedNewValues(0.1, 0.9, startPoint, endPoint, obstacles);
+	}
 
 
 }
