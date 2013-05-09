@@ -200,11 +200,13 @@ void breedNewValues(float crossover, float mutate, Target startPoint, Target end
 				int addX = (int)random(6)-3;
 				int addY = (int)random(6)-3;
 
+				//Add extra paramaters to the path temporarily
 				bestPaths[0].point[j+1].x += addX;
 				bestPaths[0].point[j+1].y += addY;
 				bestPaths[1].point[j+1].x += addX;
 				bestPaths[1].point[j+1].y += addY;
 
+				//Check Paths to see if the path we want to try is possible
 				bool pathA = false;
 				if(bestPaths[0].point[j+1].x+addX>=0 && bestPaths[0].point[j+1].y+addY>=0)
 					pathA = doesPathReachEndPoint(bestPaths[0].point[j+1], paths[i].point[j], obst);
@@ -212,10 +214,12 @@ void breedNewValues(float crossover, float mutate, Target startPoint, Target end
 				if(bestPaths[1].point[j+1].x+addX>=0 && bestPaths[1].point[j+1].y+addY>=0)
 					pathB= doesPathReachEndPoint(bestPaths[1].point[j+1], paths[i].point[j], obst);
 
+				//Remove what we added before to get our original result
 				bestPaths[0].point[j+1].x -= addX;
 				bestPaths[0].point[j+1].y -= addY;
 				bestPaths[1].point[j+1].x -= addX;
 				bestPaths[1].point[j+1].y -= addY;
+
 				//Randomly go between the two best paths
 				if(5 > random(10) )
 				{
@@ -255,6 +259,7 @@ void breedNewValues(float crossover, float mutate, Target startPoint, Target end
 			//Mutate!
 			if(mutate)
 			{
+				//Keep looping until we find a suitable path to use
 				while(true)
 				{
 					//Assign new random point

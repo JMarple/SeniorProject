@@ -69,7 +69,7 @@ void Drive(ControlType controlType, int encoderLeft, int encoderRight, int speed
 		wait1Msec(100);
 
 		//Run through PID until robot has reached goal
-		while(canStillRunPID(kPID, 10, accuracyCheck))
+		while(canStillRunPID(kPID, 50, accuracyCheck))
 		{
 			//Calculate Speed of wheels
 			int speed = calculatePID(kPID,
@@ -133,7 +133,7 @@ void Drive(ControlType controlType, int encoderLeft, int encoderRight, int speed
 		wait1Msec(100);
 
 		//Run through PID until robot has reached goal
-		while(canStillRunPID(kPID, 20, accuracyCheck))
+		while(canStillRunPID(kPID, 50, accuracyCheck))
 		{
 			//Calculate Speed of wheels using errors
 			int speed = calculatePID(kPID,
@@ -182,9 +182,14 @@ int clipNum(int num, int low, int high)
 		return num;
 }
 
+int lastError = 0;
+int ErrorCount = 0;
+
 //Figure out if we can still run the PID loop
 bool canStillRunPID(PID pid, int error, bool accuracyCheck)
 {
+
+
 	//Check for PID timeout error
 	if(pid.maxTime < time1[T1])
 	{
@@ -202,6 +207,12 @@ bool canStillRunPID(PID pid, int error, bool accuracyCheck)
 	else
 	{
 		pid.counter = 0;
+	}
+
+	if(SensorValue[InputButton] == 0)
+	{
+		wait1Msec(250);
+		return false;
 	}
 
 	return true;

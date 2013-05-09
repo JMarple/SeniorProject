@@ -33,7 +33,7 @@ void generateObstacles(int preset, Obstacles obst)
 			obst.point[3].x = 40; obst.point[3].y = 15; obst.point[3].radius = globalradius;
 			obst.point[4].x = 20; obst.point[4].y = 30; obst.point[4].radius = 10;
 			obst.point[5].x = 30; obst.point[5].y = 50; obst.point[5].radius = 10;
-			obst.point[6].x = 25; obst.point[6].y = 15; obst.point[6].radius = 5;
+			obst.point[6].x = 25; obst.point[6].y = 15; obst.point[6].radius = 10;
 			break;
 		default:
 			break;

@@ -25,7 +25,10 @@
 /*        April 11th                */
 /* V0.12 - Path Demos               */
 /*        April 23rd                */
-
+/* V0.20 - AI Path Finding          */
+/*        April 30th                */
+/* V0.21 - Path Finding in reality  */
+/*        May 6th                   */
 /************************************/
 
 /* Constants */
@@ -64,7 +67,7 @@ task main()
 	displayStatus(1, "Senior Project");
 
 	//Allow the gyro to calibrate
-	//calibrateGyro(2000);
+	calibrateGyro(2000);
 
 	//Display Field Status
 	displayStatus(0, "Generating Field");
@@ -74,23 +77,54 @@ task main()
 
 	//Assign new targets to startPoint and endPoint
 	//NOTE: Coordinantes start at bottom left
-	newTarget(startPoint, 0, 0);
+	newTarget(startPoint, 0, 20);
 	newTarget(endPoint, 40, 30);
 
-	//Display Setup Status
-	displayStatus(0, "Setup Complete");
-
-	//Setup random paths for the robot
-	initializePaths(startPoint, endPoint, obstacles);
-
-	for(int n = 0; n < 50; n++)
+	while(true)
 	{
-		//Save the best paths and reset all the paths
-		saveBestPaths();
+		//Display Setup Status
+		displayStatus(0, "Setup Complete");
 
-		//Get New Paths
-		breedNewValues(0.1, 0.9, startPoint, endPoint, obstacles);
+		//Wait for user
+		WaitForButton();
+
+		displayStatus(0, "Finding Path");
+		//Setup random paths for the robot
+		initializePaths(startPoint, endPoint, obstacles);
+
+		for(int n = 0; n < 10; n++)
+		{
+			//Save the best paths and reset all the paths
+			saveBestPaths();
+
+			//Get New Paths
+			breedNewValues(0.1, 0.9, startPoint, endPoint, obstacles);
+		}
+
+		displayStatus(0, "Path Found!");
+
+		/*Execute Path*/
+		for(int i = 0; i < MAX_PATH_SIZE-1; i++)
+		{
+			if(paths[0].point[i+1].x == -1 && paths[0].point[i+1].y == -1)
+			{
+				break;
+			}
+			driveToPoint(paths[0].point[i], paths[0].point[i+1]);
+		}
+
+		wait1Msec(1000);
+
+		for(int i = MAX_PATH_SIZE-2; i >= 0; i--)
+		{
+			if(!(paths[0].point[i+1].x == -1 && paths[0].point[i+1].y == -1))
+			{
+				driveToPoint(paths[0].point[i+1], paths[0].point[i]);
+			}
+		}
 	}
+
+
 
 
 }

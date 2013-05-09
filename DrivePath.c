@@ -9,5 +9,5 @@ void driveToPoint(Target startPoint, Target endPoint)
 	float len = sqrt( pow(endPoint.y - startPoint.y, 2) + pow(endPoint.x - startPoint.x, 2) );
 
 	Drive(TurnGyro, deg, 0, 80, 80, true);
-	Drive(StraightEncoder, len, len, 127, 127, true);
+	Drive(StraightGyroCorrect, len, deg, 127, 127, true);
 }

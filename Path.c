@@ -7,6 +7,12 @@ bool doesPathIntersectObstacle(float x1, float y1, float x2, float y2, float cx,
 			else if(y2+5 > cy && cy > y1 - 5)
 				return true;
 
+		if(y2 == y1)
+			if(x1 + 5 > cx && cx > x2 - 5)
+				return true;
+			else if(x2 + 5 > cx && cx > x1 - 5)
+				return true;
+
 		if( (cx > x1+radius && cx > x2+radius) || (cy > y1+radius && cy > y2+radius) || (cx < x1-radius && cx < x2-radius) || (cy < y1-radius && cy < y2-radius) )
 		{
 			return false;
